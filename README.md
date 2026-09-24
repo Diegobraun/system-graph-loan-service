@@ -28,7 +28,7 @@ account-service de três jeitos, de propósito, para exercitar o extrator: **`Re
 
 `AccountOpenedEvent` deste serviço tem `monthlyIncome`, mas o account-service não envia esse campo. O
 Jackson preenche `null` e a oferta sai com limite zero, sem erro nenhum. O `find_contract_issues` do MCP
-server aponta isso. Para corrigir, o account-service passaria a enviar a renda no evento, ou o loan-service
+server da plataforma aponta isso. Para corrigir, o account-service passaria a enviar a renda no evento, ou o loan-service
 buscaria a renda via `GET /customers/{id}` como já faz no pedido de empréstimo.
 
 ## Manifesto
@@ -43,4 +43,27 @@ não consegue ver. Renomeado para `system-graph.yml`, o extrator soma essas entr
 mvn spring-boot:run
 ```
 
-Porta 8082. Precisa do Kafka e do account-service em `localhost:8081`.
+Porta 8082. Precisa do Kafka e do account-service em `localhost:8081`. O Kafka sobe com o
+`docker-compose.yml` da [plataforma](https://github.com/Diegobraun/system-graph-poc).
+
+## Parte da POC system-graph
+
+Este repositório é um dos serviços da POC [system-graph](https://github.com/Diegobraun/system-graph-poc), que dá a assistentes de IA uma visão
+dos contratos entre serviços que vivem em repositórios diferentes.
+
+| Repositório | Papel |
+|---|---|
+| [system-graph-poc](https://github.com/Diegobraun/system-graph-poc) | Plataforma: extrator, MCP server, templates de CI, docker-compose e docs |
+| [system-graph-account-service](https://github.com/Diegobraun/system-graph-account-service) | Clientes e contas |
+| [system-graph-loan-service](https://github.com/Diegobraun/system-graph-loan-service) | Empréstimos |
+
+### O que este repositório tem para o grafo
+
+- **`.github/workflows/system-graph.yml`**: a cada push na `main`, compila, baixa o `graph-extractor.jar` da
+  release da plataforma, extrai o `service-graph.json` e publica como artefato do workflow. Se os secrets
+  `NEO4J_URI`, `NEO4J_USER` e `NEO4J_PASSWORD` existirem, também grava no Neo4j.
+- **`.gitlab-ci.yml`**: o mesmo job no formato GitLab, incluindo o template da plataforma. É o que um serviço da
+  empresa teria.
+- **`.mcp.json`** e **`CLAUDE.md`**: conectam o assistente ao MCP server e dizem quando consultar o grafo.
+
+O extrator só enxerga este repositório. O cruzamento com os outros serviços acontece no grafo central.
