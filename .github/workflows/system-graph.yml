@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  EXTRACTOR_URL: https://github.com/Diegobraun/system-graph-poc/releases/download/v0.1.0/graph-extractor.jar
+  EXTRACTOR_URL: https://github.com/Diegobraun/system-graph-poc/releases/download/v0.2.0/graph-extractor.jar
 
 jobs:
   extract:
