@@ -4,6 +4,10 @@ Serviço de empréstimos. Usa **Spring Cloud Stream** (funções `Consumer` e `S
 account-service de três jeitos, de propósito, para exercitar o extrator: **`RestClient`**, **HTTP Interface
 (`@HttpExchange`)** e **GraphQL** (`HttpSyncGraphQlClient`). O customer-service é chamado com **`RestClient`**.
 
+![loan-service na interface do system-graph](docs/system-graph.jpg)
+
+*O loan-service na [interface visual](https://github.com/Diegobraun/system-graph-poc#interface-visual) da plataforma: tudo que ele chama, expõe, publica e consome.*
+
 ## Contratos
 
 | Tipo | Contrato | Detalhe |
