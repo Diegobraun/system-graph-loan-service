@@ -6,7 +6,7 @@ spring:
     name: loan-service
   cloud:
     function:
-      definition: accountOpened
+      definition: accountOpened;customerKycApproved
     stream:
       kafka:
         binder:
@@ -15,9 +15,14 @@ spring:
         accountOpened-in-0:
           destination: account-opened
           group: loan-service
+        customerKycApproved-in-0:
+          destination: customer-kyc-approved
+          group: loan-service
         loanDisbursed-out-0:
           destination: loan-disbursed
 
 services:
   account-service:
     url: http://localhost:8081
+  customer-service:
+    url: http://localhost:8083

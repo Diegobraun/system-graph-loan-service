@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +14,18 @@ public class OfferService {
     private static final BigDecimal PRE_APPROVED_MULTIPLIER = BigDecimal.valueOf(3);
 
     private final Map<Long, PreApprovedOffer> offers = new ConcurrentHashMap<>();
+    private final Set<Long> kycApprovedAccounts = ConcurrentHashMap.newKeySet();
 
     public PreApprovedOffer createFor(Long accountId, Long customerId, BigDecimal monthlyIncome) {
         BigDecimal limit = monthlyIncome == null ? BigDecimal.ZERO : monthlyIncome.multiply(PRE_APPROVED_MULTIPLIER);
-        PreApprovedOffer offer = new PreApprovedOffer(accountId, customerId, limit, Instant.now());
+        PreApprovedOffer offer = new PreApprovedOffer(accountId, customerId, limit, kycApprovedAccounts.contains(accountId), Instant.now());
         offers.put(accountId, offer);
         return offer;
+    }
+
+    public void kycApproved(Long accountId) {
+        kycApprovedAccounts.add(accountId);
+        offers.computeIfPresent(accountId, (id, offer) -> offer.withKycApproved());
     }
 
     public Optional<PreApprovedOffer> findByAccount(Long accountId) {
