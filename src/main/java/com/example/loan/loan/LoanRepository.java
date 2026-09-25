@@ -1,5 +1,6 @@
 package com.example.loan.loan;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,5 +23,14 @@ public class LoanRepository {
 
     public List<Loan> findByAccount(Long accountId) {
         return loans.values().stream().filter(loan -> loan.accountId().equals(accountId)).toList();
+    }
+
+    public LoanPage findPageByAccount(Long accountId, int page, int size) {
+        List<Loan> sorted = loans.values().stream()
+                .filter(loan -> loan.accountId().equals(accountId))
+                .sorted(Comparator.comparing(Loan::createdAt).reversed().thenComparing(Loan::id))
+                .toList();
+        List<Loan> items = sorted.stream().skip((long) page * size).limit(size).toList();
+        return new LoanPage(items, page, size, sorted.size());
     }
 }
